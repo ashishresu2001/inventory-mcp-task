@@ -3,24 +3,33 @@ from pydantic import BaseModel
 
 app = FastAPI(title="Inventory Service")
 
-# In-memory inventory store
-inventory = {
-    "tshirts": 20,
-    "pants": 15
-}
-
 class InventoryChange(BaseModel):
     item: str
     change: int
 
+class InventoryManager:
+    def __init__(self):
+        self.inventory = {"tshirts": 20, "pants": 15}
+
+    def get_inventory(self):
+        return self.inventory
+
+    def modify_inventory(self, item, change):
+        item = item.lower()
+        if item not in self.inventory:
+            raise ValueError("Invalid item")
+        self.inventory[item] += change
+        return self.inventory
+
+manager = InventoryManager()
+
 @app.get("/inventory")
 def get_inventory():
-    return inventory
+    return manager.get_inventory()
 
 @app.post("/inventory")
 def modify_inventory(change: InventoryChange):
-    item = change.item.lower()
-    if item not in inventory:
-        raise HTTPException(status_code=400, detail="Invalid item")
-    inventory[item] += change.change
-    return inventory
+    try:
+        return manager.modify_inventory(change.item, change.change)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
