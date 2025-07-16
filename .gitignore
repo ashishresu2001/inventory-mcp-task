@@ -1,0 +1,7 @@
+# Ignore Python venv and junk files
+**/venv/
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
