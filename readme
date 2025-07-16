@@ -1,137 +1,106 @@
-# 🧾 Inventory Management + GenAI Interface
+Inventory Management + GenAI Interface
 
-## Overview
+Overview
 
 This project contains two services:
 
-- **inventory-service**: Manages inventory for `tshirts` and `pants`.
-- **mcp-server**: Uses Claude (Anthropic) to convert natural language queries into inventory actions.
+inventory-service : Manages inventory for tshirts and pants.
+mcp-server : Uses Claude (Anthropic) to convert natural language queries into inventory actions.
 
 ---
 
-## 🚀 Setup Instructions
+Setup Instructions
 
-### 1. Clone the repository
+Clone the repository
 
-```bash
+bash
 git clone <your-repo-url>
 cd inventory-mcp-task
-```
 
-### 2. Create and activate a Python virtual environment
 
-```bash
+2. Create and activate a Python virtual environment
+
+
 python3 -m venv venv
 source venv/bin/activate
 pip install fastapi uvicorn pydantic requests anthropic
-```
 
-### 3. Run the Inventory Service
+3. Run the Inventory Service
 
-```bash
+
 cd inventory-service
 uvicorn main:app --reload --port 8000
-```
 
-### 4. Set your Claude API key
+4. Set your Claude API key
 
 Get your API key from [Anthropic](https://console.anthropic.com/keys) and set it in your terminal:
 
-```bash
+
 export ANTHROPIC_API_KEY=your_claude_api_key
-```
+
 
 ### 5. Run the MCP Server
 
-```bash
+
 cd ../mcp-server
 uvicorn main:app --reload --port 8001
-```
 
----
 
-## 🧪 Example Requests
 
-### Inventory Service
+Example Requests
 
-#### Get inventory
+Inventory Service
 
-```bash
+Get inventory
+
+
 curl -X GET http://localhost:8000/inventory
-```
 
-#### Modify inventory
 
-```bash
+Modify inventory
+
+
 curl -X POST http://localhost:8000/inventory \
   -H "Content-Type: application/json" \
   -d '{"item": "tshirts", "change": -5}'
-```
 
-### MCP Server
+MCP Server
 
-#### Natural language query
+Natural language query
 
-```bash
+
 curl -X POST http://localhost:8001/mcp \
   -H "Content-Type: application/json" \
   -d '{"query": "I sold 3 t shirts"}'
-```
 
-#### Another example
+Another example
 
-```bash
+
 curl -X POST http://localhost:8001/mcp \
   -H "Content-Type: application/json" \
   -d '{"query": "Add 5 pants"}'
-```
 
-#### Get inventory via NL
 
-```bash
+Get inventory via NL
+
+
 curl -X POST http://localhost:8001/mcp \
   -H "Content-Type: application/json" \
   -d '{"query": "How many pants and shirts do I have?"}'
-```
+  
 
 ---
 
-## 💡 Design Choices
+Design Choices
 
-- **FastAPI** for both services for simplicity and auto-generated OpenAPI docs.
-- **In-memory dictionary** for inventory (no database needed).
-- **Claude Opus 4** for LLM parsing, chosen for its accuracy and ease of API integration.
-- **Prompt engineering**: The prompt includes clear instructions and examples to guide Claude in converting NL queries to JSON actions.
-- **Error handling**: MCP checks for valid items and parses LLM output, returning clear errors for unsupported items or malformed responses.
+FastAPI is used for both services because it's easy to use and automatically creates API docs.
+In-memory dictionary is used to store inventory — no need for a database since this is a small project.
+Claude Opus 4 is used as the AI model because it’s accurate and simple to connect with.
+Prompt engineering: I gave the AI clear instructions and examples so it knows how to turn natural language into structured JSON actions.
+Error handling: The MCP server checks if the AI output is valid and handles problems like unknown items or bad formatting with clear error messages.
 
----
 
-## ⚠️ Known Limitations & Edge Cases
-
-- **Inventory is not persistent**: Data resets when the service restarts.
-- **LLM prompt sensitivity**: Queries must be similar to prompt examples; short or ambiguous queries (e.g., `"tshirt count"`) may not work unless the prompt is expanded.
-- **Supported items**: Only `tshirts` and `pants` are allowed.
-- **No authentication**: Both services are open by default.
-- **Claude API key required**: You must have access to Anthropic's Claude API.
-
----
-
-## 📚 OpenAPI Docs
+OpenAPI Docs
 
 - Inventory service docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 - MCP server docs: [http://localhost:8001/docs](http://localhost:8001/docs)
-
----
-
-## 📝 Improvements
-
-- Add persistent storage for inventory.
-- Expand prompt examples for more robust NL parsing.
-- Add authentication and logging.
-- Handle more edge cases and unsupported queries.
-
----
-
-## 👋 Contact
-
-For any questions, reach out via GitHub Issues
